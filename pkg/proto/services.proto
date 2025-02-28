@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package services;
+
+option go_package = "github.com/9Neechan/EI-test-task/common/proto";
+
+service ServiceManager {
+    // Создать новый сервис (POST /service)
+    rpc CreateService(CreateServiceRequest) returns (CreateServiceResponse);
+}
+
+// Запрос на создание сервиса
+message CreateServiceRequest {
+    string name = 1;
+    string description = 2;
+}
+
+message CreateServiceResponse {
+    int64 service_id = 1;
+    string name = 2;
+    string description = 3;
+    string created_at = 4;
+}

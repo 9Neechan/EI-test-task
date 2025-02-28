@@ -1,0 +1,42 @@
+syntax = "proto3";
+
+package stats;
+
+option go_package = "github.com/9Neechan/EI-test-task/common/proto";
+
+service StatsService {
+    // Увеличить количество вызовов (POST /call)
+    rpc IncrementCall(IncrementCallRequest) returns (IncrementCallResponse);
+
+    // Получить статистику по вызовам (GET /calls)
+    rpc GetStats(GetStatsRequest) returns (GetStatsResponse);
+}
+
+// Запрос на увеличение количества вызовов
+message IncrementCallRequest {
+    int64 user_id = 1;
+    int64 service_id = 2;
+}
+
+message IncrementCallResponse {
+    bool success = 1;
+}
+
+// Запрос на получение статистики
+message GetStatsRequest {
+    optional int64 user_id = 1;  // Фильтр по user_id
+    optional int64 service_id = 2;  // Фильтр по service_id
+    int32 page = 3;
+    int32 limit = 4;
+}
+
+message GetStatsResponse {
+    repeated StatRecord stats = 1;
+}
+
+// Структура статистики вызовов
+message StatRecord {
+    int64 user_id = 1;
+    int64 service_id = 2;
+    int64 count = 3;
+}
