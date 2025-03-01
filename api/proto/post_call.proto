@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package proto;
+
+option go_package = "github.com/9Neechan/EI-test-task/api/proto";
+
+// Запрос на увеличение количества вызовов
+message PostCallRequest {
+    int64 user_id = 1;
+    int64 service_id = 2;
+}
+
+message PostCallResponse {
+    bool success = 1;
+}

@@ -3,7 +3,8 @@ syntax = "proto3";
 package proto;
 
 import "create_service.proto";
-import "stats.proto";
+import "get_stats.proto";
+import "post_call.proto";
 
 option go_package = "github.com/9Neechan/EI-test-task/api/proto";
 
