@@ -6,19 +6,19 @@ option go_package = "github.com/9Neechan/EI-test-task/common/proto";
 
 service StatsService {
     // Увеличить количество вызовов (POST /call)
-    rpc IncrementCall(IncrementCallRequest) returns (IncrementCallResponse);
+    rpc PostCall(PostCallRequest) returns (PostCallResponse);
 
     // Получить статистику по вызовам (GET /calls)
     rpc GetStats(GetStatsRequest) returns (GetStatsResponse);
 }
 
 // Запрос на увеличение количества вызовов
-message IncrementCallRequest {
+message PostCallRequest {
     int64 user_id = 1;
     int64 service_id = 2;
 }
 
-message IncrementCallResponse {
+message PostCallResponse {
     bool success = 1;
 }
 
