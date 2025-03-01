@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package proto;
+
+import "create_service.proto";
+import "stats.proto";
+
+option go_package = "github.com/9Neechan/EI-test-task/api/proto";
+
+service StatsService {
+    rpc CreateService(CreateServiceRequest) returns (CreateServiceResponse){}
+    rpc PostCall(PostCallRequest) returns (PostCallResponse){}
+    rpc GetStats(GetStatsRequest) returns (GetStatsResponse){}
+}

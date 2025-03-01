@@ -1,16 +1,8 @@
 syntax = "proto3";
 
-package stats;
+package proto;
 
-option go_package = "github.com/9Neechan/EI-test-task/common/proto";
-
-service StatsService {
-    // Увеличить количество вызовов (POST /call)
-    rpc PostCall(PostCallRequest) returns (PostCallResponse);
-
-    // Получить статистику по вызовам (GET /calls)
-    rpc GetStats(GetStatsRequest) returns (GetStatsResponse);
-}
+option go_package = "github.com/9Neechan/EI-test-task/api/proto";
 
 // Запрос на увеличение количества вызовов
 message PostCallRequest {

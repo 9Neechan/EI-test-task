@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.5.1
 // - protoc             v5.29.3
-// source: stats.proto
+// source: service.proto
 
 package proto
 
@@ -19,17 +19,17 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	StatsService_PostCall_FullMethodName = "/stats.StatsService/PostCall"
-	StatsService_GetStats_FullMethodName = "/stats.StatsService/GetStats"
+	StatsService_CreateService_FullMethodName = "/proto.StatsService/CreateService"
+	StatsService_PostCall_FullMethodName      = "/proto.StatsService/PostCall"
+	StatsService_GetStats_FullMethodName      = "/proto.StatsService/GetStats"
 )
 
 // StatsServiceClient is the client API for StatsService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type StatsServiceClient interface {
-	// Увеличить количество вызовов (POST /call)
+	CreateService(ctx context.Context, in *CreateServiceRequest, opts ...grpc.CallOption) (*CreateServiceResponse, error)
 	PostCall(ctx context.Context, in *PostCallRequest, opts ...grpc.CallOption) (*PostCallResponse, error)
-	// Получить статистику по вызовам (GET /calls)
 	GetStats(ctx context.Context, in *GetStatsRequest, opts ...grpc.CallOption) (*GetStatsResponse, error)
 }
 
@@ -39,6 +39,16 @@ type statsServiceClient struct {
 
 func NewStatsServiceClient(cc grpc.ClientConnInterface) StatsServiceClient {
 	return &statsServiceClient{cc}
+}
+
+func (c *statsServiceClient) CreateService(ctx context.Context, in *CreateServiceRequest, opts ...grpc.CallOption) (*CreateServiceResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CreateServiceResponse)
+	err := c.cc.Invoke(ctx, StatsService_CreateService_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
 func (c *statsServiceClient) PostCall(ctx context.Context, in *PostCallRequest, opts ...grpc.CallOption) (*PostCallResponse, error) {
@@ -65,9 +75,8 @@ func (c *statsServiceClient) GetStats(ctx context.Context, in *GetStatsRequest, 
 // All implementations must embed UnimplementedStatsServiceServer
 // for forward compatibility.
 type StatsServiceServer interface {
-	// Увеличить количество вызовов (POST /call)
+	CreateService(context.Context, *CreateServiceRequest) (*CreateServiceResponse, error)
 	PostCall(context.Context, *PostCallRequest) (*PostCallResponse, error)
-	// Получить статистику по вызовам (GET /calls)
 	GetStats(context.Context, *GetStatsRequest) (*GetStatsResponse, error)
 	mustEmbedUnimplementedStatsServiceServer()
 }
@@ -79,6 +88,9 @@ type StatsServiceServer interface {
 // pointer dereference when methods are called.
 type UnimplementedStatsServiceServer struct{}
 
+func (UnimplementedStatsServiceServer) CreateService(context.Context, *CreateServiceRequest) (*CreateServiceResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateService not implemented")
+}
 func (UnimplementedStatsServiceServer) PostCall(context.Context, *PostCallRequest) (*PostCallResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method PostCall not implemented")
 }
@@ -104,6 +116,24 @@ func RegisterStatsServiceServer(s grpc.ServiceRegistrar, srv StatsServiceServer)
 		t.testEmbeddedByValue()
 	}
 	s.RegisterService(&StatsService_ServiceDesc, srv)
+}
+
+func _StatsService_CreateService_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateServiceRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(StatsServiceServer).CreateService(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: StatsService_CreateService_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(StatsServiceServer).CreateService(ctx, req.(*CreateServiceRequest))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 func _StatsService_PostCall_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -146,9 +176,13 @@ func _StatsService_GetStats_Handler(srv interface{}, ctx context.Context, dec fu
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var StatsService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "stats.StatsService",
+	ServiceName: "proto.StatsService",
 	HandlerType: (*StatsServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "CreateService",
+			Handler:    _StatsService_CreateService_Handler,
+		},
 		{
 			MethodName: "PostCall",
 			Handler:    _StatsService_PostCall_Handler,
@@ -159,5 +193,5 @@ var StatsService_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "stats.proto",
+	Metadata: "service.proto",
 }
