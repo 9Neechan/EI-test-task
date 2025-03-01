@@ -10,7 +10,7 @@ import (
 const createService = `-- name: CreateService :one
 INSERT INTO services (name, description, created_at)
 VALUES ($1, $2, NOW())
-RETURNING id
+RETURNING id, name, description, created_at
 `
 
 type CreateServiceParams struct {
@@ -18,9 +18,14 @@ type CreateServiceParams struct {
 	Description string `json:"description"`
 }
 
-func (q *Queries) CreateService(ctx context.Context, arg CreateServiceParams) (int64, error) {
+func (q *Queries) CreateService(ctx context.Context, arg CreateServiceParams) (Service, error) {
 	row := q.db.QueryRowContext(ctx, createService, arg.Name, arg.Description)
-	var id int64
-	err := row.Scan(&id)
-	return id, err
+	var i Service
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.Description,
+		&i.CreatedAt,
+	)
+	return i, err
 }

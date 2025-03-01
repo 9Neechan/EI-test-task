@@ -16,9 +16,10 @@ migratedown:
 	migrate -path internal/db/migrations -database "$(DB_URL)" -verbose down
 
 sqlc:
-	sqlc generate
+	sqlc generate -f configs/sqlc.yaml
 
-
+cleanmodcache:
+	 go clean -modcache 
 
 
 test:

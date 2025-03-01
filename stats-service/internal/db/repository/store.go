@@ -3,7 +3,7 @@ package db
 import (
 	"database/sql"
 
-	sqlc "github.com/9Neechan/EI-test-task/stats-server/internal/db/sqlc"
+	sqlc "github.com/9Neechan/EI-test-task/stats-service/internal/db/sqlc"
 )
 
 type Store interface {
@@ -25,8 +25,10 @@ type SQLStore struct {
 }
 
 func NewSQLStore(db *sql.DB) *SQLStore {
-	return &SQLStore{
+	store := &SQLStore{
 		db:      db,
 		Queries: sqlc.New(db),
 	}
+
+	return store
 }

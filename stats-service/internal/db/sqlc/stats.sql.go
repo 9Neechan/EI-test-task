@@ -7,23 +7,25 @@ import (
 	"context"
 )
 
-const getCalls = `-- name: GetCalls :many
+const getStats = `-- name: GetStats :many
 SELECT s.user_id, s.service_id, s.count, u.name AS user_name, srv.name AS service_name
 FROM stats s
 JOIN users u ON s.user_id = u.id
 JOIN services srv ON s.service_id = srv.id
-WHERE ($1 IS NULL OR s.user_id = $1) -- Фильтр по user_id
-AND ($2 IS NULL OR s.service_id = $2) -- Фильтр по service_id
+WHERE (s.user_id = $1 OR $1 = 0)
+AND (s.service_id = $2 OR $2 = 0)
 ORDER BY s.count DESC
 LIMIT $3 OFFSET $4
 `
 
-type GetCallsParams struct {
-	Limit  int32 `json:"limit"`
-	Offset int32 `json:"offset"`
+type GetStatsParams struct {
+	UserID    int64 `json:"user_id"`
+	ServiceID int64 `json:"service_id"`
+	Limit     int32 `json:"limit"`
+	Offset    int32 `json:"offset"`
 }
 
-type GetCallsRow struct {
+type GetStatsRow struct {
 	UserID      int64  `json:"user_id"`
 	ServiceID   int64  `json:"service_id"`
 	Count       int64  `json:"count"`
@@ -31,15 +33,20 @@ type GetCallsRow struct {
 	ServiceName string `json:"service_name"`
 }
 
-func (q *Queries) GetCalls(ctx context.Context, arg GetCallsParams) ([]GetCallsRow, error) {
-	rows, err := q.db.QueryContext(ctx, getCalls, arg.Limit, arg.Offset)
+func (q *Queries) GetStats(ctx context.Context, arg GetStatsParams) ([]GetStatsRow, error) {
+	rows, err := q.db.QueryContext(ctx, getStats,
+		arg.UserID,
+		arg.ServiceID,
+		arg.Limit,
+		arg.Offset,
+	)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	items := []GetCallsRow{}
+	items := []GetStatsRow{}
 	for rows.Next() {
-		var i GetCallsRow
+		var i GetStatsRow
 		if err := rows.Scan(
 			&i.UserID,
 			&i.ServiceID,
