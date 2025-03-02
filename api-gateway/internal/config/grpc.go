@@ -1,15 +1,13 @@
 package config
 
 import (
-	"net"
 	"os"
 
 	"github.com/pkg/errors"
 )
 
 const (
-	grpcHostEnvName = "GRPC_HOST"
-	grpcPortEnvName = "GRPC_PORT"
+	grpcAdressEnvName = "GRPC_SERVER_ADDRESS"
 )
 
 type GRPCConfig interface {
@@ -17,27 +15,20 @@ type GRPCConfig interface {
 }
 
 type grpcConfig struct {
-	host string
-	port string
+	gadress string
 }
 
 func NewGRPCConfig() (GRPCConfig, error) {
-	host := os.Getenv(grpcHostEnvName)
-	if len(host) == 0 {
-		return nil, errors.New("grpc host not found")
-	}
-
-	port := os.Getenv(grpcPortEnvName)
-	if len(port) == 0 {
-		return nil, errors.New("grpc port not found")
+	gadress := os.Getenv(grpcAdressEnvName)
+	if len(gadress) == 0 {
+		return nil, errors.New("grpc server adress not found")
 	}
 
 	return &grpcConfig{
-		host: host,
-		port: port,
+		gadress: gadress,
 	}, nil
 }
 
 func (cfg *grpcConfig) Address() string {
-	return net.JoinHostPort(cfg.host, cfg.port)
+	return cfg.gadress
 }

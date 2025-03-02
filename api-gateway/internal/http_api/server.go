@@ -1,9 +1,8 @@
 package api
 
 import (
+	"log"
 	"time"
-
-	cfg "github.com/9Neechan/EI-test-task/api-gateway/internal/config"
 
 	"github.com/gin-gonic/gin"
 	limiter "github.com/ulule/limiter/v3"
@@ -12,18 +11,17 @@ import (
 )
 
 type Server struct {
-	config cfg.Config
-	//store      db.Store
+	adress string
 	router *gin.Engine
 }
 
-func NewServer(config cfg.Config) (*Server, error) {
+func NewServer(adress string) (*Server) {
 	server := &Server{
-		config: config,
+		adress: adress,
 	}
 
 	server.setupRouter()
-	return server, nil
+	return server
 }
 
 func (server *Server) setupRouter() {
@@ -44,8 +42,9 @@ func (server *Server) setupRouter() {
 	server.router = router
 }
 
-func (server *Server) Start(address string) error {
-	return server.router.Run(address)
+func (server *Server) Start() error {
+	log.Println("on", server.adress)
+	return server.router.Run(server.adress)
 }
 
 func errorResponse(err error) gin.H {

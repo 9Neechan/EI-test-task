@@ -2,22 +2,21 @@ package app
 
 import (
 	"context"
-	"log"
-	"net"
+	"fmt"
 
+	_ "github.com/lib/pq"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
-	"google.golang.org/grpc/reflection"
 
-	"github.com/9Neechan/EI-test-task/api-gateway/internal/api"
 	"github.com/9Neechan/EI-test-task/api-gateway/internal/config"
-	desc "github.com/9Neechan/EI-test-task/api/pb"
+	gclient "github.com/9Neechan/EI-test-task/api-gateway/internal/grpc_client"
+	http "github.com/9Neechan/EI-test-task/api-gateway/internal/http_api"
 )
 
 type App struct {
 	serviceProvider *serviceProvider
-	grpcServer      *grpc.ClientConn
-	httpServer      *api.Server
+	httpServer      *http.Server
+	gClient         *gclient.GRPCClient
 }
 
 func NewApp(ctx context.Context) (*App, error) {
@@ -32,14 +31,15 @@ func NewApp(ctx context.Context) (*App, error) {
 }
 
 func (a *App) Run() error {
-	return a.runGRPCServer()
+	return a.runHTTPServer()
 }
 
 func (a *App) initDeps(ctx context.Context) error {
 	inits := []func(context.Context) error{
 		a.initConfig,
 		a.initServiceProvider,
-		a.initGRPCServer,
+		a.initGRPCClient,
+		a.initHTTPServer,
 	}
 
 	for _, f := range inits {
@@ -48,46 +48,48 @@ func (a *App) initDeps(ctx context.Context) error {
 			return err
 		}
 	}
-
 	return nil
 }
 
-func (a *App) initConfig(_ context.Context) (config.Config, error) {
-	cfg, err := config.LoadConfig(".env")
+func (a *App) initConfig(_ context.Context) error {
+	err := config.Load("../../configs/cfg.env")
 	if err != nil {
-		return config.Config{}, err
+		return err
 	}
 
-	return cfg, nil
+	return nil
 }
 
 func (a *App) initServiceProvider(_ context.Context) error {
-	a.serviceProvider = newServiceProvider()
+	a.serviceProvider = newServiceProvider() // Передаем конфиг
 	return nil
 }
 
-func (a *App) initGRPCServer(_ context.Context) error {
-	a.grpcServer = grpc.NewServer(grpc.Creds(insecure.NewCredentials()))
+func (a *App) initGRPCClient(_ context.Context) error {
+	// Подключаемся к gRPC-серверу
+	conn, err := grpc.Dial(
+		a.serviceProvider.grpcConfig.Address(),
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
+	)
+	if err != nil {
+		return fmt.Errorf("❌ Не удалось подключиться к gRPC-серверу: %w", err)
+	}
+	a.serviceProvider.gconn = conn
 
-	reflection.Register(a.grpcServer)
+	//a.serviceProvider.gclientImpl = gclient.NewGRPCClient(conn)
+	a.gClient =  gclient.NewGRPCClient(conn)
 
-	desc.RegisterStatsServiceServer(a.grpcServer, a.serviceProvider.UserImpl())
+	fmt.Println("✅ gRPC клиент успешно создан")
 
 	return nil
 }
 
-func (a *App) runGRPCServer() error {
-	log.Printf("GRPC server is running on %s", a.serviceProvider.GRPCConfig().Address())
-
-	list, err := net.Listen("tcp", a.serviceProvider.GRPCConfig().Address())
-	if err != nil {
-		return err
-	}
-
-	err = a.grpcServer.Serve(list)
-	if err != nil {
-		return err
-	}
-
+func (a *App) initHTTPServer(_ context.Context) error {
+	a.httpServer = http.NewServer(a.serviceProvider.httpConfig.Address())
 	return nil
+}
+
+func (a *App) runHTTPServer() error {
+	err := a.httpServer.Start()
+	return err
 }

@@ -3,27 +3,42 @@ package app
 import (
 	"log"
 
-	"github.com/olezhek28/clean-architecture/internal/api/user"
-	"github.com/olezhek28/clean-architecture/internal/repository"
-	userRepository "github.com/olezhek28/clean-architecture/internal/repository/user"
-	"github.com/olezhek28/clean-architecture/internal/service"
-	userService "github.com/olezhek28/clean-architecture/internal/service/user"
-
 	config "github.com/9Neechan/EI-test-task/api-gateway/internal/config"
+	gclient "github.com/9Neechan/EI-test-task/api-gateway/internal/grpc_client"
+	hserver "github.com/9Neechan/EI-test-task/api-gateway/internal/http_api"
+	"github.com/gin-gonic/gin"
+	"google.golang.org/grpc"
 )
 
+// TODO delete not needed fields
 type serviceProvider struct {
-	grpcConfig config.GRPCConfig
-
-	userRepository repository.UserRepository
-
-	userService service.UserService
-
-	userImpl *user.Implementation
+	grpcConfig  config.GRPCConfig
+	httpConfig  config.HTTPConfig
+	gconn       *grpc.ClientConn
+	gclientImpl *gclient.GRPCClient
+	router      *gin.Engine
+	hserver     *hserver.Server
 }
 
 func newServiceProvider() *serviceProvider {
-	return &serviceProvider{}
+	sp := &serviceProvider{}
+	sp.HTTPConfig()
+	sp.GRPCConfig()
+
+	return sp
+}
+
+func (s *serviceProvider) HTTPConfig() config.HTTPConfig {
+	if s.httpConfig == nil {
+		cfg, err := config.NewHTTPConfig()
+		if err != nil {
+			log.Fatalf("failed to get http config: %s", err.Error())
+		}
+
+		s.httpConfig = cfg
+	}
+
+	return s.httpConfig
 }
 
 func (s *serviceProvider) GRPCConfig() config.GRPCConfig {
@@ -39,28 +54,10 @@ func (s *serviceProvider) GRPCConfig() config.GRPCConfig {
 	return s.grpcConfig
 }
 
-func (s *serviceProvider) UserRepository() repository.UserRepository {
-	if s.userRepository == nil {
-		s.userRepository = userRepository.NewRepository()
+// CloseGRPC закрывает gRPC-соединение
+/*func (s *serviceProvider) CloseGRPC() {
+	if s.gconn != nil {
+		s.gconn.Close()
+		fmt.Println("✅ gRPC-соединение закрыто")
 	}
-
-	return s.userRepository
-}
-
-func (s *serviceProvider) UserService() service.UserService {
-	if s.userService == nil {
-		s.userService = userService.NewService(
-			s.UserRepository(),
-		)
-	}
-
-	return s.userService
-}
-
-func (s *serviceProvider) UserImpl() *user.Implementation {
-	if s.userImpl == nil {
-		s.userImpl = user.NewImplementation(s.UserService())
-	}
-
-	return s.userImpl
-}
+}*/

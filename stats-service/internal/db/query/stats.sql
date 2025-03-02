@@ -2,7 +2,7 @@
 INSERT INTO stats (user_id, service_id, count, created_at)
 VALUES ($1, $2, 1, NOW())
 ON CONFLICT (user_id, service_id) 
-DO UPDATE SET count = stats.count + 1, created_at = NOW()
+DO UPDATE SET count = stats.count + 1
 RETURNING *;
 
 -- name: GetStats :many

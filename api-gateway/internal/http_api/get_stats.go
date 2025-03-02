@@ -13,6 +13,8 @@ type getStatsRequest struct {
 	Offset    int32 `json:"offset"`
 }
 
+// curl -X GET "http://localhost:8080/calls?user_id=123&service_id=456&page=1&limit=10"
+
 func (server *Server) getStats(ctx *gin.Context) {
 	var req postCallRequest
 	if err := ctx.ShouldBindUri(&req); err != nil {

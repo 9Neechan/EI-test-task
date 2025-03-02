@@ -2,7 +2,6 @@ package app
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"net"
 
@@ -79,7 +78,6 @@ func (a *App) initGRPCServer(_ context.Context) error {
 }
 
 func (a *App) runGRPCServer() error {
-	fmt.Println(a.serviceProvider) //!!!!!
 	log.Printf("GRPC server is running on %s", a.serviceProvider.GRPCConfig().Address())
 
 	list, err := net.Listen("tcp", a.serviceProvider.GRPCConfig().Address())

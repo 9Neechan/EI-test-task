@@ -1,26 +1,22 @@
-package grpc
+package grpcclient
 
 import (
-    "context"
-    "log"
-
-    pb "github.com/9Neechan/EI-test-task/api/pb" // Подключаем сгенерированный gRPC-код
-    "google.golang.org/grpc"
+	desc "github.com/9Neechan/EI-test-task/api/pb"
+	"google.golang.org/grpc"
 )
 
-func NewStatsServiceClient(conn *grpc.ClientConn) pb.StatsServiceClient {
-    return pb.NewStatsServiceClient(conn)
+// GRPCClient - обёртка для gRPC-клиента
+type GRPCClient struct {
+	conn            *grpc.ClientConn
+	statsClient     desc.StatsServiceClient
 }
 
-func CallStatsService(client pb.StatsServiceClient, userID, serviceID int64) {
-    req := &pb.PostCallRequest{
-        UserId:    userID,
-        ServiceId: serviceID,
-    }
-    
-    resp, err := client.PostCall(context.Background(), req)
-    if err != nil {
-        log.Fatalf("Ошибка вызова gRPC: %v", err)
-    }
-    log.Printf("Ответ сервера: %v", resp.Success)
+// NewGRPCClient создаёт новый gRPC-клиент
+func NewGRPCClient(conn *grpc.ClientConn) *GRPCClient {
+	return &GRPCClient{
+		conn:        conn,
+		statsClient: desc.NewStatsServiceClient(conn),
+	}
 }
+
+

@@ -3,8 +3,11 @@ module github.com/9Neechan/EI-test-task/api-gateway
 go 1.23.5
 
 require (
-	github.com/9Neechan/EI-test-task/api v0.0.0-20250301112019-50ba8696b1fd
+	github.com/9Neechan/EI-test-task/api v0.0.0-20250301225955-b0c36820c143
 	github.com/gin-gonic/gin v1.10.0
+	github.com/joho/godotenv v1.5.1
+	github.com/lib/pq v1.10.9
+	github.com/pkg/errors v0.9.1
 	github.com/spf13/viper v1.19.0
 	github.com/ulule/limiter/v3 v3.11.2
 	google.golang.org/grpc v1.70.0
@@ -32,13 +35,13 @@ require (
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/pelletier/go-toml/v2 v2.2.2 // indirect
-	github.com/pkg/errors v0.9.1 // indirect
 	github.com/sagikazarmark/locafero v0.4.0 // indirect
 	github.com/sagikazarmark/slog-shim v0.1.0 // indirect
 	github.com/sourcegraph/conc v0.3.0 // indirect
 	github.com/spf13/afero v1.11.0 // indirect
 	github.com/spf13/cast v1.6.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
+	github.com/stretchr/testify v1.10.0 // indirect
 	github.com/subosito/gotenv v1.6.0 // indirect
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
 	github.com/ugorji/go/codec v1.2.12 // indirect
