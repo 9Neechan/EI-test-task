@@ -1,44 +1,50 @@
 package api
 
 import (
+	"context"
+	"fmt"
 	"net/http"
+	"time"
 
+	desc "github.com/9Neechan/EI-test-task/api/pb"
 	"github.com/gin-gonic/gin"
+	"google.golang.org/grpc/status"
 )
 
-type postCallRequest struct {
-	UserID    int64 `json:"user_id"`
-	ServiceID int64 `json:"service_id"`
+type postCallHttpRequest struct {
+	UserID    int64 `form:"user_id" binding:"required"`
+	ServiceID int64 `form:"service_id" binding:"required"`
 }
 
-
 func (server *Server) postCall(ctx *gin.Context) {
-	var req postCallRequest
-	if err := ctx.ShouldBindUri(&req); err != nil {
+	var req postCallHttpRequest
+
+	// Привязываем параметры из URI
+	if err := ctx.ShouldBindQuery(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
 
-	stat := struct{}{}
+	fmt.Println("!!!", req)
 
-	/*arg := db.CreateAccountParams{
-		Owner:    authPayload.Username,
-		Currency: req.Currency,
-		Balance:  0,
+	// Создаем gRPC-запрос
+	grpcReq := &desc.PostCallRequest{
+		UserId:    int64(req.UserID),
+		ServiceId: int64(req.ServiceID),
 	}
 
-	account, err := server.store.CreateAccount(ctx, arg)
-	if err != nil {
-		if pqErr, ok := err.(*pq.Error); ok {
-			switch pqErr.Code.Name() {
-			case "foreign_key_violation", "unique_violation":
-				ctx.JSON(http.StatusForbidden, errorResponse(err))
-				return
-			}
-		}
-		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
-		return
-	}*/
+	// Устанавливаем контекст с таймаутом
+	gCtx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	defer cancel()
 
-	ctx.JSON(http.StatusOK, stat)
+	// Вызываем gRPC-сервис
+	resp, err := server.gClient.PostCall(gCtx, grpcReq)
+	if err != nil {
+		grpcStatus, _ := status.FromError(err)
+		ctx.JSON(mapGRPCToHTTPStatus(grpcStatus.Code()), errorResponse(err))
+		return
+	}
+
+	// Отправляем успешный JSON-ответ
+	ctx.JSON(http.StatusOK, gin.H{"success": resp.Success})
 }

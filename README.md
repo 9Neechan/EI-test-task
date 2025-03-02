@@ -18,7 +18,20 @@
 ---
 #### Тестовыe запросы
 
-``` curl -X GET "http://localhost:8080/calls?user_id=123&service_id=456&page=1&limit=10" ```
+```cd api-gateway/cmd/http_server```
+
+```
+curl -X POST "http://localhost:8080/call?user_id=1&service_id=2"
+
+curl -X POST "http://localhost:8080/service" \
+     -H "Content-Type: application/json" \
+     -d '{
+           "name": "abc",
+           "description": "descrpit"
+         }' 
+
+curl -X GET "http://localhost:8080/calls?user_id=1&service_id=0&page=1&limit=10"
+```
 
 
 
@@ -31,10 +44,13 @@
 
 
 ---
-cd stats-service/cmd/grpc_server/
+#### Тестовыe запросы к gRPC серверу
+```cd stats-service/cmd/grpc_server/```
 
+```
 grpcurl -plaintext -d '{"name":"name", "description":"descr"}' localhost:9090 proto.StatsService.CreateService
 
 grpcurl -plaintext -d '{"user_id":1, "service_id":3}' localhost:9090 proto.StatsService.PostCall
 
 grpcurl -plaintext -d '{"user_id":1, "service_id":3, "page":0, "limit":10}' localhost:9090 proto.StatsService.GetStats
+```

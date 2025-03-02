@@ -1,3 +1,6 @@
+networks:
+  app_network:
+
 services:
   db:
     image: postgres:17.3-alpine
@@ -7,6 +10,8 @@ services:
         - POSTGRES_USER=root
         - POSTGRES_PASSWORD=secret
         - POSTGRES_DB=stats
+    networks:
+      - app_network
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
@@ -19,7 +24,9 @@ services:
       - db
     environment:
       - DB_SOURCE=postgresql://root:secret@db:5432/stats?sslmode=disable
-      - GRPC_PORT=9090
+      - GRPC_SERVER_ADDRESS=stats-service:9090
+    networks:
+      - app_network
     entrypoint: ["/app/wait-for.sh", "db:5432", "--", "/app/start.sh"]
     command: ["./main"]
     
@@ -32,8 +39,9 @@ services:
     depends_on:
       - stats-service
     environment:
-      - GRPC_SERVER=stats-service:9090
-      #- HTTP_PORT=8080
+      - GRPC_SERVER_ADDRESS=stats-service:9090
+    networks:
+      - app_network
     ports:
       - "8080:8080"
 

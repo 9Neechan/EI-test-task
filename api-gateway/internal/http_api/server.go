@@ -4,6 +4,7 @@ import (
 	"log"
 	"time"
 
+	gclient "github.com/9Neechan/EI-test-task/api-gateway/internal/grpc_client"
 	"github.com/gin-gonic/gin"
 	limiter "github.com/ulule/limiter/v3"
 	mgin "github.com/ulule/limiter/v3/drivers/middleware/gin"
@@ -11,13 +12,15 @@ import (
 )
 
 type Server struct {
-	adress string
-	router *gin.Engine
+	adress  string
+	router  *gin.Engine
+	gClient *gclient.GRPCClient
 }
 
-func NewServer(adress string) (*Server) {
+func NewServer(adress string, gClient *gclient.GRPCClient) *Server {
 	server := &Server{
 		adress: adress,
+		gClient: gClient,
 	}
 
 	server.setupRouter()

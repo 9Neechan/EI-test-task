@@ -1,47 +1,49 @@
 package api
 
 import (
+	"context"
 	"net/http"
+	"time"
 
+	desc "github.com/9Neechan/EI-test-task/api/pb"
 	"github.com/gin-gonic/gin"
+	"google.golang.org/grpc/status"
 )
 
-type getStatsRequest struct {
-	UserID    int64 `json:"user_id"`
-	ServiceID int64 `json:"service_id"`
-	Limit     int32 `json:"limit"`
-	Offset    int32 `json:"offset"`
+type getStatsHttpRequest struct {
+	UserID    int64 `form:"user_id"`
+	ServiceID int64 `form:"service_id"`
+	Limit     int32 `form:"limit"`
+	Offset    int32 `form:"offset"`
 }
 
-// curl -X GET "http://localhost:8080/calls?user_id=123&service_id=456&page=1&limit=10"
-
 func (server *Server) getStats(ctx *gin.Context) {
-	var req postCallRequest
-	if err := ctx.ShouldBindUri(&req); err != nil {
+	var req getStatsHttpRequest
+	if err := ctx.ShouldBindQuery(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
 
-	stats := struct{}{}
-
-	/*arg := db.CreateAccountParams{
-		Owner:    authPayload.Username,
-		Currency: req.Currency,
-		Balance:  0,
+	// Формируем gRPC-запрос
+	grpcReq := &desc.GetStatsRequest{
+		UserId:    &req.UserID,
+		ServiceId: &req.ServiceID,
+		Limit:     req.Limit,
+		Page:      req.Offset,
 	}
 
-	account, err := server.store.CreateAccount(ctx, arg)
-	if err != nil {
-		if pqErr, ok := err.(*pq.Error); ok {
-			switch pqErr.Code.Name() {
-			case "foreign_key_violation", "unique_violation":
-				ctx.JSON(http.StatusForbidden, errorResponse(err))
-				return
-			}
-		}
-		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
-		return
-	}*/
+	// Устанавливаем контекст с таймаутом
+	gCtx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	defer cancel()
 
-	ctx.JSON(http.StatusOK, stats)
+	// Вызываем gRPC-клиент
+	resp, err := server.gClient.GetStats(gCtx, grpcReq)
+	if err != nil {
+		grpcStatus, _ := status.FromError(err)
+		ctx.JSON(mapGRPCToHTTPStatus(grpcStatus.Code()), errorResponse(err))
+		return
+	}
+
+	// Отправляем успешный JSON-ответ с полученной статистикой
+	ctx.JSON(http.StatusOK, resp)
 }

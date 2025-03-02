@@ -52,8 +52,8 @@ func (a *App) initDeps(ctx context.Context) error {
 }
 
 func (a *App) initConfig(_ context.Context) error {
-	err := config.Load("../../configs/cfg.env") // local test
-	//err := config.Load("cfg.env") // prod
+	//err := config.Load("../../configs/cfg.env") // local test
+	err := config.Load("cfg.env") // prod
 	if err != nil {
 		return err
 	}
@@ -86,7 +86,7 @@ func (a *App) initGRPCClient(_ context.Context) error {
 }
 
 func (a *App) initHTTPServer(_ context.Context) error {
-	a.httpServer = http.NewServer(a.serviceProvider.httpConfig.Address())
+	a.httpServer = http.NewServer(a.serviceProvider.httpConfig.Address(), a.gClient)
 	return nil
 }
 

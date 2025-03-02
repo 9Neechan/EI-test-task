@@ -16,11 +16,11 @@ func (i *Implementation) PostCall(ctx context.Context, req *desc.PostCallRequest
 	}
 
 	// Проверяем, передал ли клиент обязательные параметры
-	if req.UserId == 0 {
+	if req.UserId <= 0 {
 		return nil, status.Error(codes.InvalidArgument, "UserId is required and must be greater than 0")
 	}
 
-	if req.ServiceId == 0 {
+	if req.ServiceId <= 0 {
 		return nil, status.Error(codes.InvalidArgument, "ServiceId is required and must be greater than 0")
 	}
 
