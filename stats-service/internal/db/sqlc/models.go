@@ -14,10 +14,9 @@ type Service struct {
 }
 
 type Stat struct {
-	UserID    int64     `json:"user_id"`
-	ServiceID int64     `json:"service_id"`
-	Count     int64     `json:"count"`
-	CreatedAt time.Time `json:"created_at"`
+	UserID    int64 `json:"user_id"`
+	ServiceID int64 `json:"service_id"`
+	Count     int64 `json:"count"`
 }
 
 type User struct {

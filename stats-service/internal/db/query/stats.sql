@@ -1,6 +1,6 @@
 -- name: PostCall :one
-INSERT INTO stats (user_id, service_id, count, created_at)
-VALUES ($1, $2, 1, NOW())
+INSERT INTO stats (user_id, service_id, count)
+VALUES ($1, $2, 1)
 ON CONFLICT (user_id, service_id) 
 DO UPDATE SET count = stats.count + 1
 RETURNING *;

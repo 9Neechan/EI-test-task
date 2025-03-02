@@ -6,33 +6,43 @@ import (
 	//"github.com/olezhek28/clean-architecture/internal/converter"
 	desc "github.com/9Neechan/EI-test-task/api/pb"
 	db "github.com/9Neechan/EI-test-task/stats-service/internal/db/sqlc"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 func (i *Implementation) GetStats(ctx context.Context, req *desc.GetStatsRequest) (*desc.GetStatsResponse, error) {
-	arg := db.GetStatsParams{
-		UserID:    *req.UserId,
-		ServiceID: *req.ServiceId,
-		Limit:     req.Limit,
-		Offset:    req.Limit,
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "request is nil")
 	}
+
+	arg := db.GetStatsParams{}
+
+	// Проверяем указатели, чтобы избежать разыменования nil
+	if req.UserId != nil {
+		arg.UserID = *req.UserId
+	}
+
+	if req.ServiceId != nil {
+		arg.ServiceID = *req.ServiceId
+	}
+
+	arg.Limit = req.Limit
+	arg.Offset = req.Page
 
 	stats_db, err := i.db.GetStats(ctx, arg)
 	if err != nil {
-		return nil, err
+		return nil, status.Errorf(codes.Internal, "failed to get stats: %v", err)
 	}
 
-	// ! gorutines
+	// Предварительное выделение памяти для слайса
 	stats := make([]*desc.StatRecord, 0, len(stats_db))
 	for _, val := range stats_db {
-		stat_grpc := &desc.StatRecord{
+		stats = append(stats, &desc.StatRecord{
 			UserId:    val.UserID,
 			ServiceId: val.ServiceID,
 			Count:     val.Count,
-		}
-		stats = append(stats, stat_grpc)
+		})
 	}
 
-	return &desc.GetStatsResponse{
-		Stats: stats,
-	}, nil
+	return &desc.GetStatsResponse{Stats: stats}, nil
 }

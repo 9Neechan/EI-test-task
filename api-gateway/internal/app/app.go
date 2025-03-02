@@ -52,8 +52,8 @@ func (a *App) initDeps(ctx context.Context) error {
 }
 
 func (a *App) initConfig(_ context.Context) error {
-	//err := config.Load("../../configs/cfg.env")
-	err := config.Load("cfg.env")
+	err := config.Load("../../configs/cfg.env") // local test
+	//err := config.Load("cfg.env") // prod
 	if err != nil {
 		return err
 	}
@@ -78,7 +78,7 @@ func (a *App) initGRPCClient(_ context.Context) error {
 	a.serviceProvider.gconn = conn
 
 	//a.serviceProvider.gclientImpl = gclient.NewGRPCClient(conn)
-	a.gClient =  gclient.NewGRPCClient(conn)
+	a.gClient = gclient.NewGRPCClient(conn)
 
 	fmt.Println("✅ gRPC клиент успешно создан")
 

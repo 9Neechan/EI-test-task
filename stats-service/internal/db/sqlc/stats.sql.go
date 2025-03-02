@@ -68,11 +68,11 @@ func (q *Queries) GetStats(ctx context.Context, arg GetStatsParams) ([]GetStatsR
 }
 
 const postCall = `-- name: PostCall :one
-INSERT INTO stats (user_id, service_id, count, created_at)
-VALUES ($1, $2, 1, NOW())
+INSERT INTO stats (user_id, service_id, count)
+VALUES ($1, $2, 1)
 ON CONFLICT (user_id, service_id) 
-DO UPDATE SET count = stats.count + 1, created_at = NOW()
-RETURNING user_id, service_id, count, created_at
+DO UPDATE SET count = stats.count + 1
+RETURNING user_id, service_id, count
 `
 
 type PostCallParams struct {
@@ -83,11 +83,6 @@ type PostCallParams struct {
 func (q *Queries) PostCall(ctx context.Context, arg PostCallParams) (Stat, error) {
 	row := q.db.QueryRowContext(ctx, postCall, arg.UserID, arg.ServiceID)
 	var i Stat
-	err := row.Scan(
-		&i.UserID,
-		&i.ServiceID,
-		&i.Count,
-		&i.CreatedAt,
-	)
+	err := row.Scan(&i.UserID, &i.ServiceID, &i.Count)
 	return i, err
 }
