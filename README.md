@@ -27,7 +27,8 @@ curl -X POST "http://localhost:8080/service" \
      -H "Content-Type: application/json" \
      -d '{
            "name": "abc",
-           "description": "descrpit"
+           "description": "descrpit",
+           "price": 2.5
          }' 
 
 curl -X GET "http://localhost:8080/calls?user_id=1&service_id=0&page=1&limit=10"
@@ -47,7 +48,7 @@ curl -X GET "http://localhost:8080/calls?user_id=1&service_id=0&page=1&limit=10"
 ```cd stats-service/cmd/grpc_server/```
 
 ```
-grpcurl -plaintext -d '{"name":"name", "description":"descr"}' localhost:9090 proto.StatsService.CreateService
+grpcurl -plaintext -d '{"name":"name", "description":"descr", "price":2.5}' localhost:9090 proto.StatsService.CreateService
 
 grpcurl -plaintext -d '{"user_id":1, "service_id":3}' localhost:9090 proto.StatsService.PostCall
 

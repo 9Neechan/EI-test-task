@@ -24,7 +24,7 @@ func (i *Implementation) CreateService(ctx context.Context, req *desc.CreateServ
 	if req.Description == "" {
 		return nil, status.Error(codes.InvalidArgument, "❌ описание сервиса не может быть пустым")
 	}
-	if req.Price == 0 {
+	if req.Price == 0.0 {
 		return nil, status.Error(codes.InvalidArgument, "❌ цена сервиса не может быть пустым")
 	}
 
@@ -32,7 +32,7 @@ func (i *Implementation) CreateService(ctx context.Context, req *desc.CreateServ
 	arg := db.CreateServiceParams{
 		Name:        req.Name,
 		Description: req.Description,
-		Price: req.Price,
+		Price:       req.Price,
 	}
 
 	service, err := i.db.CreateService(ctx, arg)
@@ -45,6 +45,6 @@ func (i *Implementation) CreateService(ctx context.Context, req *desc.CreateServ
 		ServiceId:   service.ID,
 		Name:        service.Name,
 		Description: service.Description,
-		Price: service.Price,
+		Price:       service.Price,
 	}, nil
 }

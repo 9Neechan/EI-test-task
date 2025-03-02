@@ -95,12 +95,12 @@ func TestGetCalls(t *testing.T) {
 
 	testCases := []struct {
 		name   string
-		params sqlc.GetStatsParams
+		params sqlc.GetStatsWithPriceParams
 		expect int
 	}{
 		{
 			name: "Filter by UserID",
-			params: sqlc.GetStatsParams{
+			params: sqlc.GetStatsWithPriceParams{
 				UserID:    userID1,
 				ServiceID: 0, // Игнорируем ServiceID
 				Limit:     10,
@@ -110,7 +110,7 @@ func TestGetCalls(t *testing.T) {
 		},
 		{
 			name: "Filter by ServiceID",
-			params: sqlc.GetStatsParams{
+			params: sqlc.GetStatsWithPriceParams{
 				UserID:    0, // Игнорируем UserID
 				ServiceID: serviceID2,
 				Limit:     10,
@@ -120,7 +120,7 @@ func TestGetCalls(t *testing.T) {
 		},
 		{
 			name: "Filter by UserID and ServiceID",
-			params: sqlc.GetStatsParams{
+			params: sqlc.GetStatsWithPriceParams{
 				UserID:    userID1,
 				ServiceID: serviceID2,
 				Limit:     10,
@@ -130,7 +130,7 @@ func TestGetCalls(t *testing.T) {
 		},
 		{
 			name: "No filters (all data)",
-			params: sqlc.GetStatsParams{
+			params: sqlc.GetStatsWithPriceParams{
 				UserID:    0, // Игнорируем UserID
 				ServiceID: 0, // Игнорируем ServiceID
 				Limit:     10,
@@ -142,7 +142,7 @@ func TestGetCalls(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			stats, err := testQueries.GetStats(ctx, tc.params)
+			stats, err := testQueries.GetStatsWithPrice(ctx, tc.params)
 			require.NoError(t, err)
 			require.Len(t, stats, tc.expect)
 		})

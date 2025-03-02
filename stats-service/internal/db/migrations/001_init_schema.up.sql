@@ -2,7 +2,7 @@ CREATE TABLE "services" (
   "id" bigserial PRIMARY KEY,
   "name" varchar NOT NULL,
   "description" varchar NOT NULL,
-  "price" DECIMAL(10,2) NOT NULL DEFAULT 0.00,
+  "price" NUMERIC(10,2) NOT NULL DEFAULT 0.00,
   "created_at" timestamptz NOT NULL DEFAULT (now())
 );
 

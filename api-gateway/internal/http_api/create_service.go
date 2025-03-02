@@ -11,20 +11,11 @@ import (
 )
 
 type createServiceHttpRequest struct {
-	Name        string `json:"name"`
-	Description string `json:"description"`
+	Name        string  `json:"name"`
+	Description string  `json:"description"`
+	Price       float64 `json:"price"`
 }
 
-/*
-
-curl -X POST "http://localhost:8080/service" \
-     -H "Content-Type: application/json" \
-     -d '{
-           "name": "abc",
-           "description": "descrpit"
-         }' 
-		 
-*/
 func (server *Server) createService(ctx *gin.Context) {
 	var req createServiceHttpRequest
 
@@ -38,6 +29,7 @@ func (server *Server) createService(ctx *gin.Context) {
 	grpcReq := &desc.CreateServiceRequest{
 		Name:        req.Name,
 		Description: req.Description,
+		Price:       req.Price,
 	}
 
 	// Устанавливаем контекст с таймаутом

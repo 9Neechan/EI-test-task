@@ -1,7 +1,5 @@
-github.com/9Neechan/EI-test-task/api v0.0.0-20250301121323-750be023cccb h1:bJdLjI8ITWzvdPZx0WJyg5357oSNHcjSrQJEocCYaKk=
-github.com/9Neechan/EI-test-task/api v0.0.0-20250301121323-750be023cccb/go.mod h1:cOtvzqyJkZU+Dtd+UVh3GLEHScs4JLssNMnps4b6TUw=
-github.com/9Neechan/EI-test-task/api v0.0.0-20250302182648-6b3271621aaa h1:yvafXMxZ5ESdJfEAGCiqVVPB4Wwb1uGg7db/QiZYtPs=
-github.com/9Neechan/EI-test-task/api v0.0.0-20250302182648-6b3271621aaa/go.mod h1:cOtvzqyJkZU+Dtd+UVh3GLEHScs4JLssNMnps4b6TUw=
+github.com/9Neechan/EI-test-task/api v0.0.0-20250302195349-8cf19e21b17e h1:js3JbNYj4hJOs/jxrTrPpkVXUWrV24twa+4nMm88Wo8=
+github.com/9Neechan/EI-test-task/api v0.0.0-20250302195349-8cf19e21b17e/go.mod h1:cOtvzqyJkZU+Dtd+UVh3GLEHScs4JLssNMnps4b6TUw=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc h1:U9qPSI2PIWSS1VwoXQT9A3Wy9MM3WgvqSxFWenqJduM=

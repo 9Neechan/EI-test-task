@@ -13,6 +13,7 @@ func createRandomService(t *testing.T) sqlc.Service {
 	arg := sqlc.CreateServiceParams{
 		Name:        util.RandomName(),
 		Description: util.RandomDescription(),
+		Price:       1.0,
 	}
 
 	service, err := testQueries.CreateService(context.Background(), arg)

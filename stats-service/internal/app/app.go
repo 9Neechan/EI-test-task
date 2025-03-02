@@ -2,13 +2,12 @@ package app
 
 import (
 	"context"
-	"crypto/tls"
 	"log"
 	"net"
 
 	_ "github.com/lib/pq"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials"
+	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/reflection"
 
 	desc "github.com/9Neechan/EI-test-task/api/pb"
@@ -68,7 +67,7 @@ func (a *App) initServiceProvider(_ context.Context) error {
 
 func (a *App) initGRPCServer(_ context.Context) error {
 	// Создаем gRPC сервер
-	a.grpcServer = grpc.NewServer(grpc.Creds(credentials.NewTLS(&tls.Config{})))
+	a.grpcServer = grpc.NewServer(grpc.Creds(insecure.NewCredentials()))
 
 	// Регистрируем рефлексию для gRPC UI (например, grpcurl)
 	reflection.Register(a.grpcServer)

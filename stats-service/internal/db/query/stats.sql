@@ -6,7 +6,7 @@ DO UPDATE SET count = stats.count + 1
 RETURNING *;
 
 -- name: GetStats :many
-SELECT s.user_id, s.service_id, s.count, u.name AS user_name, srv.name AS service_name
+SELECT s.user_id, s.service_id, s.count
 FROM stats s
 JOIN users u ON s.user_id = u.id
 JOIN services srv ON s.service_id = srv.id
@@ -21,7 +21,7 @@ SELECT
     s.service_id, 
     s.count, 
     srv.price, 
-    (s.count * srv.price) AS total_spent
+    (s.count::FLOAT * srv.price)::FLOAT AS total_spent
 FROM stats s
 JOIN services srv ON s.service_id = srv.id
 WHERE (s.user_id = $1 OR $1 = 0)
