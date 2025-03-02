@@ -6,6 +6,7 @@ import (
 	"google.golang.org/grpc/codes"
 )
 
+// mapGRPCToHTTPStatus maps a gRPC status code to an HTTP status code
 func mapGRPCToHTTPStatus(code codes.Code) int {
 	switch code {
 	case codes.OK:

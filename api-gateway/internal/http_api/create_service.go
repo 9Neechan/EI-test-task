@@ -5,38 +5,36 @@ import (
 	"net/http"
 	"time"
 
-	desc "github.com/9Neechan/EI-test-task/api/pb"
 	"github.com/gin-gonic/gin"
 	"google.golang.org/grpc/status"
+
+	desc "github.com/9Neechan/EI-test-task/api/pb"
 )
 
+// createServiceHttpRequest represents the HTTP request for creating a service
 type createServiceHttpRequest struct {
 	Name        string  `json:"name"`
 	Description string  `json:"description"`
 	Price       float64 `json:"price"`
 }
 
+// createService handles the HTTP request for creating a service
 func (server *Server) createService(ctx *gin.Context) {
 	var req createServiceHttpRequest
-
-	// Привязываем JSON-запрос к структуре
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
 
-	// Формируем gRPC-запрос
 	grpcReq := &desc.CreateServiceRequest{
 		Name:        req.Name,
 		Description: req.Description,
 		Price:       req.Price,
 	}
 
-	// Устанавливаем контекст с таймаутом
 	gCtx, cancel := context.WithTimeout(ctx, 5*time.Second)
 	defer cancel()
 
-	// Вызываем gRPC-клиент
 	resp, err := server.gClient.CreateService(gCtx, grpcReq)
 	if err != nil {
 		grpcStatus, _ := status.FromError(err)
@@ -44,6 +42,5 @@ func (server *Server) createService(ctx *gin.Context) {
 		return
 	}
 
-	// Отправляем успешный JSON-ответ
 	ctx.JSON(http.StatusOK, resp)
 }

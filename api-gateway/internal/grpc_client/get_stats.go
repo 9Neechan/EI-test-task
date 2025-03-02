@@ -5,12 +5,13 @@ import (
 	"fmt"
 	"time"
 
-	desc "github.com/9Neechan/EI-test-task/api/pb"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+
+	desc "github.com/9Neechan/EI-test-task/api/pb"
 )
 
-// GetStats вызывает gRPC-метод GetStats на сервере
+// GetStats calls the GetStats gRPC method on the server
 func (c *GRPCClient) GetStats(ctx context.Context, in *desc.GetStatsRequest) (*desc.GetStatsResponse, error) {
 	if in == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be nil")
@@ -21,7 +22,7 @@ func (c *GRPCClient) GetStats(ctx context.Context, in *desc.GetStatsRequest) (*d
 
 	res, err := c.statsClient.GetStats(ctx, in)
 	if err != nil {
-		return nil, fmt.Errorf("❌ Ошибка вызова GetStats: %w", err)
+		return nil, fmt.Errorf("Error calling GetStats: %w", err)
 	}
 
 	return res, nil

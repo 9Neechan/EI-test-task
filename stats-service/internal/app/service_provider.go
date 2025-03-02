@@ -10,15 +10,16 @@ import (
 	gapi "github.com/9Neechan/EI-test-task/stats-service/internal/gapi"
 )
 
+// serviceProvider is a struct that holds configurations and implementations for database, GRPC, and GAPI
 type serviceProvider struct {
 	grpcConfig config.GRPCConfig
 	dbConfig   config.DBConfig
 	db         *sql.DB
 	repository sqlc.Querier         //dao
 	gapiImpl   *gapi.Implementation // api
-	//userService service.UserService // service
 }
 
+// newServiceProvider creates a new instance of serviceProvider
 func newServiceProvider() *serviceProvider {
 	sp := &serviceProvider{}
 	sp.DBConfig()
@@ -27,6 +28,7 @@ func newServiceProvider() *serviceProvider {
 	return sp
 }
 
+// DBConfig initializes and returns the database configuration
 func (s *serviceProvider) DBConfig() config.DBConfig {
 	if s.dbConfig == nil {
 		cfg, err := config.NewDBConfig()
@@ -40,6 +42,7 @@ func (s *serviceProvider) DBConfig() config.DBConfig {
 	return s.dbConfig
 }
 
+// GRPCConfig initializes and returns the GRPC configuration
 func (s *serviceProvider) GRPCConfig() config.GRPCConfig {
 	if s.grpcConfig == nil {
 		cfg, err := config.NewGRPCConfig()
@@ -53,21 +56,22 @@ func (s *serviceProvider) GRPCConfig() config.GRPCConfig {
 	return s.grpcConfig
 }
 
+// Repository initializes and returns the database repository
 func (s *serviceProvider) Repository() sqlc.Querier {
-	// Открываем соединение с БД
+	// Open a database connection
 	db, err := sql.Open(s.dbConfig.Driver(), s.dbConfig.Source())
 	if err != nil {
-		log.Fatalf("❌ Failed to open database: %v", err)
+		log.Fatalf("Failed to open database: %v", err)
 		return nil
 	}
 
-	// Проверяем соединение с БД
+	// Check the database connection
 	if err := db.Ping(); err != nil {
-		log.Fatalf("❌ Failed to connect to database: %v", err)
+		log.Fatalf("Failed to connect to database: %v", err)
 		return nil
 	}
 
-	log.Println("✅ Database connected successfully!")
+	log.Println("Database connected successfully!")
 	s.db = db
 
 	if s.repository == nil {
@@ -76,6 +80,7 @@ func (s *serviceProvider) Repository() sqlc.Querier {
 	return s.repository
 }
 
+// GapiImpl initializes and returns the GAPI implementation
 func (s *serviceProvider) GapiImpl() *gapi.Implementation {
 	if s.gapiImpl == nil {
 		s.gapiImpl = gapi.NewImplementation(s.Repository())

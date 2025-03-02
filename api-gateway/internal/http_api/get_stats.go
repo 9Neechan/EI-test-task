@@ -5,11 +5,13 @@ import (
 	"net/http"
 	"time"
 
-	desc "github.com/9Neechan/EI-test-task/api/pb"
 	"github.com/gin-gonic/gin"
 	"google.golang.org/grpc/status"
+
+	desc "github.com/9Neechan/EI-test-task/api/pb"
 )
 
+// getStatsHttpRequest represents the HTTP request structure for getting statistics
 type getStatsHttpRequest struct {
 	UserID    int64 `form:"user_id"`
 	ServiceID int64 `form:"service_id"`
@@ -17,6 +19,7 @@ type getStatsHttpRequest struct {
 	Offset    int32 `form:"offset"`
 }
 
+// getStats handles the HTTP request for getting statistics
 func (server *Server) getStats(ctx *gin.Context) {
 	var req getStatsHttpRequest
 	if err := ctx.ShouldBindQuery(&req); err != nil {
@@ -24,7 +27,6 @@ func (server *Server) getStats(ctx *gin.Context) {
 		return
 	}
 
-	// Формируем gRPC-запрос
 	grpcReq := &desc.GetStatsRequest{
 		UserId:    &req.UserID,
 		ServiceId: &req.ServiceID,
@@ -32,11 +34,9 @@ func (server *Server) getStats(ctx *gin.Context) {
 		Page:      req.Offset,
 	}
 
-	// Устанавливаем контекст с таймаутом
 	gCtx, cancel := context.WithTimeout(ctx, 5*time.Second)
 	defer cancel()
 
-	// Вызываем gRPC-клиент
 	resp, err := server.gClient.GetStats(gCtx, grpcReq)
 	if err != nil {
 		grpcStatus, _ := status.FromError(err)
@@ -44,6 +44,5 @@ func (server *Server) getStats(ctx *gin.Context) {
 		return
 	}
 
-	// Отправляем успешный JSON-ответ с полученной статистикой
 	ctx.JSON(http.StatusOK, resp)
 }

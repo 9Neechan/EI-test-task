@@ -2,22 +2,16 @@ package app
 
 import (
 	"log"
+	
+	"google.golang.org/grpc"
 
 	config "github.com/9Neechan/EI-test-task/api-gateway/internal/config"
-	gclient "github.com/9Neechan/EI-test-task/api-gateway/internal/grpc_client"
-	hserver "github.com/9Neechan/EI-test-task/api-gateway/internal/http_api"
-	"github.com/gin-gonic/gin"
-	"google.golang.org/grpc"
 )
 
-// TODO delete not needed fields
 type serviceProvider struct {
-	grpcConfig  config.GRPCConfig
-	httpConfig  config.HTTPConfig
-	gconn       *grpc.ClientConn
-	gclientImpl *gclient.GRPCClient
-	router      *gin.Engine
-	hserver     *hserver.Server
+	grpcConfig config.GRPCConfig
+	httpConfig config.HTTPConfig
+	gconn      *grpc.ClientConn
 }
 
 func newServiceProvider() *serviceProvider {

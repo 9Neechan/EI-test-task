@@ -4,11 +4,13 @@ import (
 	"context"
 	"time"
 
-	desc "github.com/9Neechan/EI-test-task/api/pb"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+
+	desc "github.com/9Neechan/EI-test-task/api/pb"
 )
 
+// PostCall calls the PostCall method on the server
 func (c *GRPCClient) PostCall(ctx context.Context, in *desc.PostCallRequest) (*desc.PostCallResponse, error) {
 	if in == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be nil")

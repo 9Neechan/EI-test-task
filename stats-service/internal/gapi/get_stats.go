@@ -4,13 +4,15 @@ import (
 	"context"
 	"sync"
 
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
+
 	desc "github.com/9Neechan/EI-test-task/api/pb"
 	db "github.com/9Neechan/EI-test-task/stats-service/internal/db/sqlc"
 	"github.com/9Neechan/EI-test-task/stats-service/internal/util"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 )
 
+// GetStats retrieves statistics for a given user and service
 func (i *Implementation) GetStats(ctx context.Context, req *desc.GetStatsRequest) (*desc.GetStatsResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request is nil")
@@ -18,7 +20,7 @@ func (i *Implementation) GetStats(ctx context.Context, req *desc.GetStatsRequest
 
 	arg := db.GetStatsWithPriceParams{}
 
-	// Проверяем указатели, чтобы избежать разыменования nil
+	// Check pointers to avoid dereferencing nil
 	if req.UserId != nil {
 		arg.UserID = *req.UserId
 	}
@@ -35,21 +37,14 @@ func (i *Implementation) GetStats(ctx context.Context, req *desc.GetStatsRequest
 		return nil, status.Errorf(codes.Internal, "failed to get stats: %v", err)
 	}
 
-	/*stats := make([]*desc.StatRecord, 0, len(stats_db))
-	for _, val := range stats_db {
-		stats = append(stats, &desc.StatRecord{
-			UserId:    val.UserID,
-			ServiceId: val.ServiceID,
-			Count:     val.Count,
-		})
-	}*/
-
+	// Initialize a wait group and a mutex for concurrent processing
 	var wg sync.WaitGroup
 	var mu sync.Mutex
 	stats := make([]*desc.StatRecord, len(stats_db))
 
 	total := 0.0
 
+	// Process each stat record concurrently
 	for i, val := range stats_db {
 		wg.Add(1)
 		go func(i int, val db.GetStatsWithPriceRow) {

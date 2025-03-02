@@ -24,13 +24,4 @@ cleanmodcache:
 test:
 	go test -v -cover ./...
 
-server:
-	go run main.go
-
-mock:
-	mockgen -package mockdb -destination db/mock/store.go github.com/9Neechan/simple-bank/db/sqlc Store
-
-docker:
-	docker build -t stats-service .
-
-.PHONY: postgres createdb dropdb migrateup migratedown sqlc test server mock
+.PHONY: postgres createdb dropdb migrateup migratedown sqlc cleanmodcache test

@@ -4,11 +4,13 @@ import (
 	"context"
 	"testing"
 
+	"github.com/stretchr/testify/require"
+
 	sqlc "github.com/9Neechan/EI-test-task/stats-service/internal/db/sqlc"
 	util "github.com/9Neechan/EI-test-task/stats-service/internal/util"
-	"github.com/stretchr/testify/require"
 )
 
+// createRandomService creates a new service with random parameters and tests its creation.
 func createRandomService(t *testing.T) sqlc.Service {
 	arg := sqlc.CreateServiceParams{
 		Name:        util.RandomName(),
@@ -29,6 +31,7 @@ func createRandomService(t *testing.T) sqlc.Service {
 	return service
 }
 
+// TestCreateService tests the creation of a new service.
 func TestCreateService(t *testing.T) {
 	createRandomService(t)
 }

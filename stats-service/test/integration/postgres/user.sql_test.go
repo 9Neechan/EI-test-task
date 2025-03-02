@@ -4,11 +4,13 @@ import (
 	"context"
 	"testing"
 
+	"github.com/stretchr/testify/require"
+
 	sqlc "github.com/9Neechan/EI-test-task/stats-service/internal/db/sqlc"
 	util "github.com/9Neechan/EI-test-task/stats-service/internal/util"
-	"github.com/stretchr/testify/require"
 )
 
+// createRandomUser создает случайного пользователя для тестирования
 func createRandomUser(t *testing.T) sqlc.User {
 	name := util.RandomName()
 	user, err := testQueries.CreateUser(context.Background(), name)
@@ -23,6 +25,7 @@ func createRandomUser(t *testing.T) sqlc.User {
 	return user
 }
 
+// TestCreateUser тестирует создание пользователя
 func TestCreateUser(t *testing.T) {
 	createRandomUser(t)
 }

@@ -13,12 +13,14 @@ import (
 	http "github.com/9Neechan/EI-test-task/api-gateway/internal/http_api"
 )
 
+// App represents the application structure
 type App struct {
 	serviceProvider *serviceProvider
 	httpServer      *http.Server
 	gClient         *gclient.GRPCClient
 }
 
+// NewApp initializes a new instance of the application
 func NewApp(ctx context.Context) (*App, error) {
 	a := &App{}
 
@@ -30,10 +32,12 @@ func NewApp(ctx context.Context) (*App, error) {
 	return a, nil
 }
 
+// Run starts the HTTP server
 func (a *App) Run() error {
 	return a.runHTTPServer()
 }
 
+// initDeps initializes the application dependencies
 func (a *App) initDeps(ctx context.Context) error {
 	inits := []func(context.Context) error{
 		a.initConfig,
@@ -51,6 +55,7 @@ func (a *App) initDeps(ctx context.Context) error {
 	return nil
 }
 
+// initConfig loads the application configuration
 func (a *App) initConfig(_ context.Context) error {
 	//err := config.Load("../../configs/cfg.env") // local test
 	err := config.Load("cfg.env") // prod
@@ -61,35 +66,38 @@ func (a *App) initConfig(_ context.Context) error {
 	return nil
 }
 
+// initServiceProvider initializes the service provider
 func (a *App) initServiceProvider(_ context.Context) error {
-	a.serviceProvider = newServiceProvider() // Передаем конфиг
+	a.serviceProvider = newServiceProvider() // Passes the config
 	return nil
 }
 
+// initGRPCClient initializes the gRPC client
 func (a *App) initGRPCClient(_ context.Context) error {
-	// Подключаемся к gRPC-серверу
+	// Connects to the gRPC server
 	conn, err := grpc.Dial(
 		a.serviceProvider.grpcConfig.Address(),
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 	)
 	if err != nil {
-		return fmt.Errorf("❌ Не удалось подключиться к gRPC-серверу: %w", err)
+		return fmt.Errorf("Failed to connect to the gRPC server: %w", err)
 	}
 	a.serviceProvider.gconn = conn
 
-	//a.serviceProvider.gclientImpl = gclient.NewGRPCClient(conn)
 	a.gClient = gclient.NewGRPCClient(conn)
 
-	fmt.Println("✅ gRPC клиент успешно создан")
+	fmt.Println("gRPC client successfully created")
 
 	return nil
 }
 
+// initHTTPServer initializes the HTTP server
 func (a *App) initHTTPServer(_ context.Context) error {
 	a.httpServer = http.NewServer(a.serviceProvider.httpConfig.Address(), a.gClient)
 	return nil
 }
 
+// runHTTPServer starts the HTTP server
 func (a *App) runHTTPServer() error {
 	err := a.httpServer.Start()
 	return err

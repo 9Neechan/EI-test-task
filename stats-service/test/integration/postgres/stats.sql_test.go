@@ -4,19 +4,20 @@ import (
 	"context"
 	"testing"
 
-	sqlc "github.com/9Neechan/EI-test-task/stats-service/internal/db/sqlc"
 	"github.com/stretchr/testify/require"
+
+	sqlc "github.com/9Neechan/EI-test-task/stats-service/internal/db/sqlc"
 )
 
-// truncateTables очищает таблицу stats перед тестами
+// truncateTables clears the stats table before tests
 func truncateTables(t *testing.T) {
 	_, err := testDB.Exec("TRUNCATE TABLE stats RESTART IDENTITY CASCADE")
 	require.NoError(t, err)
 }
 
-// TestPostCall проверяет вставку данных в stats
+// TestPostCall tests the insertion of data into stats
 func TestPostCall(t *testing.T) {
-	//truncateTables(t) // Очистка перед тестом
+	//truncateTables(t) // Clear before test
 
 	service1 := createRandomService(t)
 	serviceID1 := service1.ID
@@ -40,7 +41,7 @@ func TestPostCall(t *testing.T) {
 }
 
 func TestPostCallNotExistingIDs(t *testing.T) {
-	//truncateTables(t) // Очистка перед тестом
+	//truncateTables(t) // Clear before test
 
 	ctx := context.Background()
 	arg := sqlc.PostCallParams{
@@ -60,7 +61,7 @@ func TestPostCallNotExistingIDs(t *testing.T) {
 	require.Error(t, err)
 }
 
-// TestGetCalls проверяет получение данных из stats
+// TestGetCalls tests the retrieval of data from stats
 func TestGetCalls(t *testing.T) {
 	service1 := createRandomService(t)
 	service2 := createRandomService(t)
@@ -74,7 +75,7 @@ func TestGetCalls(t *testing.T) {
 
 	ctx := context.Background()
 
-	// Вставляем тестовые данные
+	// Insert test data
 	_, err := testQueries.PostCall(ctx, sqlc.PostCallParams{
 		UserID:    userID1,
 		ServiceID: serviceID1,
@@ -102,7 +103,7 @@ func TestGetCalls(t *testing.T) {
 			name: "Filter by UserID",
 			params: sqlc.GetStatsWithPriceParams{
 				UserID:    userID1,
-				ServiceID: 0, // Игнорируем ServiceID
+				ServiceID: 0, // Ignore ServiceID
 				Limit:     10,
 				Offset:    0,
 			},
@@ -111,7 +112,7 @@ func TestGetCalls(t *testing.T) {
 		{
 			name: "Filter by ServiceID",
 			params: sqlc.GetStatsWithPriceParams{
-				UserID:    0, // Игнорируем UserID
+				UserID:    0, // Ignore UserID
 				ServiceID: serviceID2,
 				Limit:     10,
 				Offset:    0,
@@ -131,8 +132,8 @@ func TestGetCalls(t *testing.T) {
 		{
 			name: "No filters (all data)",
 			params: sqlc.GetStatsWithPriceParams{
-				UserID:    0, // Игнорируем UserID
-				ServiceID: 0, // Игнорируем ServiceID
+				UserID:    0, // Ignore UserID
+				ServiceID: 0, // Ignore ServiceID
 				Limit:     10,
 				Offset:    0,
 			},
