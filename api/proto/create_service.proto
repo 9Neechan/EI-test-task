@@ -8,11 +8,14 @@ option go_package = "github.com/9Neechan/EI-test-task/api/proto";
 message CreateServiceRequest {
     string name = 1;
     string description = 2;
+    double price = 3;
 }
 
 message CreateServiceResponse {
     int64 service_id = 1;
     string name = 2;
     string description = 3;
-    string created_at = 4;
+    double price = 4;
+    string created_at = 5;
 }
+

@@ -10,6 +10,7 @@ type Querier interface {
 	CreateService(ctx context.Context, arg CreateServiceParams) (Service, error)
 	CreateUser(ctx context.Context, name string) (User, error)
 	GetStats(ctx context.Context, arg GetStatsParams) ([]GetStatsRow, error)
+	GetStatsWithPrice(ctx context.Context, arg GetStatsWithPriceParams) ([]GetStatsWithPriceRow, error)
 	PostCall(ctx context.Context, arg PostCallParams) (Stat, error)
 }
 

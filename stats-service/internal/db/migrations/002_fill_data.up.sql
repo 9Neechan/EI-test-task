@@ -1,15 +1,15 @@
 -- Вставляем 10 сервисов
-INSERT INTO services (name, description) VALUES
-('AI Chatbot', 'Conversational AI assistant'),
-('Image Recognition', 'AI-powered image analysis'),
-('Speech to Text', 'Convert speech into text'),
-('Text to Speech', 'Convert text into natural voice'),
-('Machine Translation', 'AI-driven language translation'),
-('Sentiment Analysis', 'Analyze emotions in text'),
-('Recommendation System', 'Personalized content suggestions'),
-('Fraud Detection', 'Detect anomalies in transactions'),
-('Chat Moderation', 'Automated chat filtering'),
-('Stock Prediction', 'AI-based stock price forecasting');
+INSERT INTO services (name, description, price) VALUES
+('AI Chatbot', 'Conversational AI assistant', 0.05),
+('Image Recognition', 'AI-powered image analysis', 0.10),
+('Speech to Text', 'Convert speech into text', 0.08),
+('Text to Speech', 'Convert text into natural voice', 0.07),
+('Machine Translation', 'AI-driven language translation', 0.06),
+('Sentiment Analysis', 'Analyze emotions in text', 0.04),
+('Recommendation System', 'Personalized content suggestions', 0.09),
+('Fraud Detection', 'Detect anomalies in transactions', 0.12),
+('Chat Moderation', 'Automated chat filtering', 0.03),
+('Stock Prediction', 'AI-based stock price forecasting', 0.15);
 
 -- Вставляем 10 пользователей
 INSERT INTO users (name) VALUES

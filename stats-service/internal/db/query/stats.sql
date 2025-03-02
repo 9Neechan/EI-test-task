@@ -14,3 +14,17 @@ WHERE (s.user_id = $1 OR $1 = 0)
 AND (s.service_id = $2 OR $2 = 0)
 ORDER BY s.count DESC
 LIMIT $3 OFFSET $4;
+
+-- name: GetStatsWithPrice :many
+SELECT 
+    s.user_id, 
+    s.service_id, 
+    s.count, 
+    srv.price, 
+    (s.count * srv.price) AS total_spent
+FROM stats s
+JOIN services srv ON s.service_id = srv.id
+WHERE (s.user_id = $1 OR $1 = 0)
+AND (s.service_id = $2 OR $2 = 0)
+ORDER BY s.count DESC
+LIMIT $3 OFFSET $4;

@@ -10,7 +10,7 @@ import (
 const createService = `-- name: CreateService :one
 INSERT INTO services (name, description, created_at)
 VALUES ($1, $2, NOW())
-RETURNING id, name, description, created_at
+RETURNING id, name, description, price, created_at
 `
 
 type CreateServiceParams struct {
@@ -25,6 +25,7 @@ func (q *Queries) CreateService(ctx context.Context, arg CreateServiceParams) (S
 		&i.ID,
 		&i.Name,
 		&i.Description,
+		&i.Price,
 		&i.CreatedAt,
 	)
 	return i, err

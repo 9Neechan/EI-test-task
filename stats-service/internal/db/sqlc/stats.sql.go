@@ -67,6 +67,70 @@ func (q *Queries) GetStats(ctx context.Context, arg GetStatsParams) ([]GetStatsR
 	return items, nil
 }
 
+const getStatsWithPrice = `-- name: GetStatsWithPrice :many
+SELECT 
+    s.user_id, 
+    s.service_id, 
+    s.count, 
+    srv.price, 
+    (s.count * srv.price) AS total_spent
+FROM stats s
+JOIN services srv ON s.service_id = srv.id
+WHERE (s.user_id = $1 OR $1 = 0)
+AND (s.service_id = $2 OR $2 = 0)
+ORDER BY s.count DESC
+LIMIT $3 OFFSET $4
+`
+
+type GetStatsWithPriceParams struct {
+	UserID    int64 `json:"user_id"`
+	ServiceID int64 `json:"service_id"`
+	Limit     int32 `json:"limit"`
+	Offset    int32 `json:"offset"`
+}
+
+type GetStatsWithPriceRow struct {
+	UserID     int64  `json:"user_id"`
+	ServiceID  int64  `json:"service_id"`
+	Count      int64  `json:"count"`
+	Price      string `json:"price"`
+	TotalSpent int32  `json:"total_spent"`
+}
+
+func (q *Queries) GetStatsWithPrice(ctx context.Context, arg GetStatsWithPriceParams) ([]GetStatsWithPriceRow, error) {
+	rows, err := q.db.QueryContext(ctx, getStatsWithPrice,
+		arg.UserID,
+		arg.ServiceID,
+		arg.Limit,
+		arg.Offset,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetStatsWithPriceRow{}
+	for rows.Next() {
+		var i GetStatsWithPriceRow
+		if err := rows.Scan(
+			&i.UserID,
+			&i.ServiceID,
+			&i.Count,
+			&i.Price,
+			&i.TotalSpent,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const postCall = `-- name: PostCall :one
 INSERT INTO stats (user_id, service_id, count)
 VALUES ($1, $2, 1)

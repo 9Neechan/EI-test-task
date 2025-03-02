@@ -2,6 +2,7 @@ package grpc
 
 import (
 	"context"
+	"sync"
 
 	//"github.com/olezhek28/clean-architecture/internal/converter"
 	desc "github.com/9Neechan/EI-test-task/api/pb"
@@ -34,15 +35,31 @@ func (i *Implementation) GetStats(ctx context.Context, req *desc.GetStatsRequest
 		return nil, status.Errorf(codes.Internal, "failed to get stats: %v", err)
 	}
 
-	// Предварительное выделение памяти для слайса
-	stats := make([]*desc.StatRecord, 0, len(stats_db))
+	/*stats := make([]*desc.StatRecord, 0, len(stats_db))
 	for _, val := range stats_db {
 		stats = append(stats, &desc.StatRecord{
 			UserId:    val.UserID,
 			ServiceId: val.ServiceID,
 			Count:     val.Count,
 		})
+	}*/
+
+	var wg sync.WaitGroup
+	stats := make([]*desc.StatRecord, len(stats_db))
+
+	for i, val := range stats_db {
+		wg.Add(1)
+		go func(i int, val db.GetStatsRow) {
+			defer wg.Done()
+			stats[i] = &desc.StatRecord{
+				UserId:    val.UserID,
+				ServiceId: val.ServiceID,
+				Count:     val.Count,
+			}
+		}(i, val)
 	}
+
+	wg.Wait()
 
 	return &desc.GetStatsResponse{Stats: stats}, nil
 }

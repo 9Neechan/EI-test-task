@@ -34,7 +34,6 @@ curl -X GET "http://localhost:8080/calls?user_id=1&service_id=0&page=1&limit=10"
 ```
 
 
-
 ---
 #### Безопасность
 
@@ -44,7 +43,7 @@ curl -X GET "http://localhost:8080/calls?user_id=1&service_id=0&page=1&limit=10"
 
 
 ---
-#### Тестовыe запросы к gRPC серверу
+#### Тестовыe запросы к gRPC серверу (если запустить локально)
 ```cd stats-service/cmd/grpc_server/```
 
 ```
@@ -54,3 +53,8 @@ grpcurl -plaintext -d '{"user_id":1, "service_id":3}' localhost:9090 proto.Stats
 
 grpcurl -plaintext -d '{"user_id":1, "service_id":3, "page":0, "limit":10}' localhost:9090 proto.StatsService.GetStats
 ```
+
+---
+#### Как можно улучшить?
+
+- добавить redis кэш stats-service чтобы снизить нагрузку на БД
