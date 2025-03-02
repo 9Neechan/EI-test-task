@@ -52,7 +52,8 @@ func (a *App) initDeps(ctx context.Context) error {
 }
 
 func (a *App) initConfig(_ context.Context) error {
-	err := config.Load("../../configs/cfg.env")
+	//err := config.Load("../../configs/cfg.env")
+	err := config.Load("cfg.env")
 	if err != nil {
 		return err
 	}

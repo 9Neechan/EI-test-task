@@ -21,7 +21,6 @@ sqlc:
 cleanmodcache:
 	 go clean -modcache 
 
-
 test:
 	go test -v -cover ./...
 
@@ -31,9 +30,7 @@ server:
 mock:
 	mockgen -package mockdb -destination db/mock/store.go github.com/9Neechan/simple-bank/db/sqlc Store
 
+docker:
+	docker build -t stats-service .
 
-
-evans:
-	evans --host localhost --port 9090 -r repl
-
-.PHONY: postgres createdb dropdb migrateup migratedown migrateup1 migratedown1 sqlc test server mock db_docs db_schema proto evans
+.PHONY: postgres createdb dropdb migrateup migratedown sqlc test server mock

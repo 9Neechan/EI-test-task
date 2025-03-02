@@ -4,39 +4,36 @@ services:
     container_name: postgres_db
     restart: always
     environment:
-      POSTGRES_DB: stats
-      POSTGRES_USER: root
-      POSTGRES_PASSWORD: secret
+        - POSTGRES_USER=root
+        - POSTGRES_PASSWORD=secret
+        - POSTGRES_DB=stats
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
   stats-service:
     build:
-      context: ../stats-service
+      context: stats-service
       dockerfile: Dockerfile
     container_name: stats-service
     depends_on:
       - db
     environment:
-      DB_HOST: db
-      DB_PORT: 5432
-      DB_USER: user
-      DB_PASSWORD: password
-      DB_NAME: ai_stats
-      GRPC_PORT: 50051
-    ports:
-      - "50051:50051"
+      - DB_SOURCE=postgresql://root:secret@db:5432/stats?sslmode=disable
+      - GRPC_PORT=9090
+    entrypoint: ["/app/wait-for.sh", "db:5432", "--", "/app/start.sh"]
+    command: ["./main"]
+    
 
   api-gateway:
     build:
-      context: ../api-gateway
+      context: api-gateway
       dockerfile: Dockerfile
     container_name: api-gateway
     depends_on:
       - stats-service
     environment:
-      GRPC_SERVER: stats-service:50051
-      HTTP_PORT: 8080
+      - GRPC_SERVER=stats-service:9090
+      #- HTTP_PORT=8080
     ports:
       - "8080:8080"
 
