@@ -8,18 +8,19 @@ import (
 )
 
 const createService = `-- name: CreateService :one
-INSERT INTO services (name, description, created_at)
-VALUES ($1, $2, NOW())
+INSERT INTO services (name, description, price, created_at)
+VALUES ($1, $2, $3, NOW())
 RETURNING id, name, description, price, created_at
 `
 
 type CreateServiceParams struct {
 	Name        string `json:"name"`
 	Description string `json:"description"`
+	Price       string `json:"price"`
 }
 
 func (q *Queries) CreateService(ctx context.Context, arg CreateServiceParams) (Service, error) {
-	row := q.db.QueryRowContext(ctx, createService, arg.Name, arg.Description)
+	row := q.db.QueryRowContext(ctx, createService, arg.Name, arg.Description, arg.Price)
 	var i Service
 	err := row.Scan(
 		&i.ID,

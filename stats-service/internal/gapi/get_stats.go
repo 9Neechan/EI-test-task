@@ -45,7 +45,10 @@ func (i *Implementation) GetStats(ctx context.Context, req *desc.GetStatsRequest
 	}*/
 
 	var wg sync.WaitGroup
+	var mu sync.Mutex
 	stats := make([]*desc.StatRecord, len(stats_db))
+
+	total := 0.0
 
 	for i, val := range stats_db {
 		wg.Add(1)
@@ -55,7 +58,11 @@ func (i *Implementation) GetStats(ctx context.Context, req *desc.GetStatsRequest
 				UserId:    val.UserID,
 				ServiceId: val.ServiceID,
 				Count:     val.Count,
+				Price: val.Price,
 			}
+			mu.Lock()
+			defer mu.Unlock()
+			total += float64(val.Count) * val.Price
 		}(i, val)
 	}
 

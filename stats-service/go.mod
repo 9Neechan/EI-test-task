@@ -3,7 +3,7 @@ module github.com/9Neechan/EI-test-task/stats-service
 go 1.23.5
 
 require (
-	github.com/9Neechan/EI-test-task/api v0.0.0-20250301121323-750be023cccb
+	github.com/9Neechan/EI-test-task/api v0.0.0-20250302182648-6b3271621aaa
 	github.com/joho/godotenv v1.5.1
 	github.com/lib/pq v1.10.9
 	github.com/pkg/errors v0.9.1
