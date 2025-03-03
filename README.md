@@ -18,8 +18,6 @@
 ---
 #### Тестовыe запросы
 
-```cd api-gateway/cmd/http_server```
-
 ```
 curl -X POST "http://localhost:8080/call?user_id=1&service_id=2"
 
@@ -46,7 +44,6 @@ curl -X GET "http://localhost:8080/calls?user_id=1&service_id=0&page=1&limit=10"
 
 ---
 #### Тестовыe запросы к gRPC серверу (если запустить локально)
-```cd stats-service/cmd/grpc_server/```
 
 ```
 grpcurl -plaintext -d '{"name":"name", "description":"descr", "price":2.5}' localhost:9090 proto.StatsService.CreateService
